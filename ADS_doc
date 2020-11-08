@@ -1,0 +1,55 @@
+소프트웨어 구조 설계(Architecture Design)
+
+모듈: wordBox.py
+클래스: wordBox
+역할: 무작위의 단어, 위치 반환 
+
+모듈: inputBox.py
+클래스: inputBox
+역할: 단어의 입력을 받고, 단어(적)을 없애는 역할
+
+모듈: game.py
+클래스: Game
+역할: 게임의 핵심 기능 구현
+
+모듈: main.py
+클래스: main
+역할: 게임의 Gui 인터페이스 구현(시작화면)
+
+모듈: gameover.py
+역할: 게임이 끝나면, 점수를 보여주고, 재시작할지 메인화면으로 갈지 선택함
+
+====================================================================
+
+클래스 인터페이스 설계
+
+1. wordBox(speed)
+-init() : 단어 박스 생성, 단어, 위치, 크기 등 특성 다 지정.
+-move(): 단어 박스를 움직이는 메소드
+
+2. inputBox
+-enter() : inputBox의 문자열 == wordBox 객체의 문자열 ->죽임
+-cnt(scrore) 죽이면 횟수 올라감
+
+3. game
+-animate(): 화면을 바꾸는 메소드
+ --충돌 감지하는 조건문 -> 라이프차감
+ --점수, 라이프 ,난이도 표시
+
+-set_speed():main.py의 상중하 event를 받아서 초기 속도를 지정
+
+ 
+4. main
+main class 내 method
+-init(): 게임 창 생성자 
+-initUI(): 초기 디자인 설정
+-readRankDB(): 랭크 기록 파일 
+-showRankDB(): 랭크 기록 보여주는 메소드 
+-startGame(): game.py 실행 
+main class 밖 method
+-writeRankDB(): 게임오버 됬을 때 랭크 기록 메소드 
+
+5. gameover
+-replay(): 게임을 재시작 시킴 
+
+
