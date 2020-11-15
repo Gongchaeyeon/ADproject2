@@ -3,7 +3,7 @@ from game import inputBox as IB
 import pygame, math, sys
 from PyQt5 import QtWidgets as Qt
 
-#Sprite Group for collision decision
+#Sprite Group, enemy를 move 시키기 위해서 필요
 group = pygame.sprite.Group()
 
 #https://stackoverflow.com/questions/24727773/detecting-rectangle-collision-with-a-circle
@@ -40,19 +40,20 @@ def collision(rleft, rtop, width, height,   # rectangle definition
 display_size = (1280, 960)
 size=display_size
 
+#화면, 입력박스, 단어박스들, 라이프, 점수등 초기화
 def initialize():
     global screen, textinput, time_term, clock, last_time, enemy, lives, score, producedT
 
-    screen = pygame.display.set_mode(size)    #이건 game.py에서 다뤄야함.
+    screen = pygame.display.set_mode(size)
 
-    #inputBox.py 수정 필요
     # Create TextInput-object
     textinput = IB.TextInput()
+
     #단어 생성 시간 간격 ms
     time_term = 3000
     clock = pygame.time.Clock()
     last_time = pygame.time.get_ticks()
-    # enemy(wordBox's instance)
+
     for w in group:
         group.remove(w)
 
@@ -71,6 +72,7 @@ def set_initial_speed(level = "중"):
     else:#상
         return 3
 
+#게임 오버 후 화면에 글자 숫자 띄워줌
 def replay(time):
     screen.fill((255, 255, 255))
     replay_font = pygame.font.Font(None, 50)
@@ -88,6 +90,7 @@ def replay(time):
 
     pygame.display.update()
 
+#게임 오버 후 replay 할 것인지, 끝낼 것인지 결정
 def isgameover(lives):
     if not lives:
 
@@ -95,6 +98,7 @@ def isgameover(lives):
         showing = pygame.time.get_ticks()
         t = 10
         R_pressed = False
+        #10초안에 R키 누를 시 재시작, 그렇지 않으면 게임 종료
         while (waiting > pygame.time.get_ticks() and not (R_pressed)):
             if showing + 1000 < pygame.time.get_ticks():
                 showing += 1000
@@ -104,6 +108,7 @@ def isgameover(lives):
             for event in events:
                 if event.type == pygame.QUIT:
                     exit()
+                #R key가 눌리면
                 elif event.type == pygame.KEYDOWN and event.key == pygame.locals.K_r:
                     initialize()
                     R_pressed = True
@@ -120,17 +125,18 @@ if __name__ == "__main__":
         isgameover(lives)
         screen.fill((255, 255, 255))  # 뒷 배경색을 하얀색으로 채움
 
-        #draw lives and score
+        #라이프, 점수 표시 draw lives and score
         for i in range(lives):
             pygame.draw.circle(screen, (200, 0, 130), (30+30*i, 900), 10)
 
         score_font=pygame.font.Font(None, 30)
         score_surface=score_font.render("score: {}".format(score), 1, (0, 0, 0))
         screen.blit(score_surface, (30, 930))
-        #draw circle
+
+        #핵 그리기 draw circle
         pygame.draw.circle(screen, (10, 25, 124),(size[0]/2, size[1]/2) ,170, 5)
 
-        #produce enemy( = wordBox )
+        #단어박스 생성, produce enemy( = wordBox )
         if pygame.time.get_ticks() > last_time+time_term:
             enemy = WB.wordBox()
             enemy.set_speed(level, producedT)
@@ -139,13 +145,13 @@ if __name__ == "__main__":
             last_time+=time_term
 
         for enemy in group:
-            #collision 처리
+            #단어박스 움직임
             enemy.move()
             enemy.surface = enemy.word_font.render(enemy.word, True, (0, 0, 0))
             screen.blit(enemy.surface, (enemy.rect.x+5, enemy.rect.y+5))
             pygame.draw.rect(screen, [0,0,0], enemy.rect, 1)
 
-            #collision
+            #collision(충돌)시 단어(enemy) 제거 , 라이프 깎임
             if collision(enemy.rect.x, enemy.rect.y, enemy.rect.w, enemy.rect.h,
                          size[0]/2, size[1]/2, 170):
                 group.remove(enemy)
@@ -159,7 +165,7 @@ if __name__ == "__main__":
         # Feed it with events every frame
         textinput.update(events)
 
-        #kill enemy by entering correspending word
+        #단어 입력시, 해당 단어박스 없앰 kill enemy by entering correspending word
         if textinput.get_search():
             for w in group:
                 if textinput.get_text() == w.word:
@@ -172,7 +178,6 @@ if __name__ == "__main__":
         pygame.display.update()
         clock.tick(30)
 
-# for문에서 wordBox객체 move하고, 콜리즌 검사(라이프 차감) 하고, 화면에 블릿 하고
 
 #개선해야 할점
 # 1. enemy(wordBox's instance) remove 하는 방법  Game.py line 87, inputBox.py line 115
@@ -180,4 +185,3 @@ if __name__ == "__main__":
 # 3. 가운데 정렬
 # 4. 엔터하면 단어 사라지게 만들기
 # 5. enemy(wordBox's instance) width 크기 조정
-# 6. enemy(wordBox's instance) 움직임 조정

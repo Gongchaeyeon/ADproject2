@@ -3,6 +3,7 @@ import random, pickle
 txt_f='game/words.txt'
 pickle_f='game/words.dat'
 
+#production.py에서 실행할 때 새로운 단어 추가할려고 쓰는 함수
 def inputWords():
     f1=open(txt_f, 'rt')
     words = f1.readlines()

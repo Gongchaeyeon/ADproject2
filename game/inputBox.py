@@ -2,6 +2,7 @@
 Copyright 2017, Silas Gyger, silasgyger@gmail.com, All rights reserved.
 
 Borrowed from https://github.com/Nearoo/pygame-text-input under the MIT license.
+modified by SunwooKim11
 """
 
 import os.path
@@ -54,7 +55,7 @@ class TextInput:
         self.font_size = font_size
         self.max_string_length = max_string_length
         self.input_string = initial_string  # Inputted text
-        self.search = False # boolean value to kill an enemy
+        self.search = False # True일 때 game.py의 for문에서 같은 단어 박스가 있는 지 확인후 없앰 boolean value to kill an enemy
 
         if not os.path.isfile(font_family):
             font_family = pygame.font.match_font(font_family)
@@ -117,9 +118,7 @@ class TextInput:
                     self.temp=self.input_string
                     self.input_string = ""
                     self.cursor_position = 0
-                   #for w in group:
-                    #    if self.input_string == w.word:
-                     #       group.remove(w)#단어박스를 죽이는 func이 구현
+                    #group.remove(w)#단어박스를 죽이는 func이 구현 고민
 
 
                 elif event.key == pl.K_RIGHT:
@@ -166,9 +165,6 @@ class TextInput:
                 pygame.event.post(pygame.event.Event(pl.KEYDOWN, key=event_key, unicode=event_unicode))
         # Re-render text surface:
         string = self.input_string
-        """
-        if self.password:
-            string = "*" * len(self.input_string)"""
         self.surface = self.font_object.render(string, self.antialias, self.text_color)
 
         # Update self.cursor_visible
@@ -207,6 +203,7 @@ class TextInput:
 
     def get_text(self):
         return self.temp
+
     def get_search(self):
         return self.search
 
@@ -214,7 +211,6 @@ class TextInput:
         # Blit the text.
         screen.blit(self.surface, (self.rect.x+5, self.rect.y+5))
         # Blit the rect.
-        #pygame.draw.rect(screen, [255,255,255] , [self.rect.x+5, self.rect.y+5, self.rect.width-10,self.rect.height-10])
         pygame.draw.rect(screen, (0, 0, 0) , self.rect, 5)
 
 
