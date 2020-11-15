@@ -13,6 +13,7 @@ class wordBox(pygame.sprite.Sprite):
         self.rect = pygame.Rect(self.set[0], self.set[1], self.w, self.h) #변수, 문자열 길이에 따른 ,20 #상수
         self.word_font = pygame.font.Font(None, 30)
         self.surface = self.word_font.render(self.word, True, (0, 0, 0))
+        self.scalar_speed = 0
         print(self.word, self.set)
 
 
@@ -20,13 +21,16 @@ class wordBox(pygame.sprite.Sprite):
         #0. 랜덤한 단어
         #1. 랜덤한 위치에서 생성
 
-    def move(self, speed):
+    def move(self):
         xS = X/2 - (self.set[0]+self.w/2)
         yS = Y/2 - (self.set[1]+self.h/2)
-        k = speed / (math.sqrt(xS * xS + yS * yS))
+        k = self.scalar_speed / (math.sqrt(xS * xS + yS * yS))
         self.speed = (k * xS, k * yS)  # 식 세워가지고 speed 정해줘야함
         # speed는 속력, self.speed는 속도
         self.rect = self.rect.move(self.speed)
+
+    def set_speed(self, level, t):
+        self.scalar_speed = level*math.sqrt(t)
 
 if __name__ == "__main__":
     pygame.font.init()

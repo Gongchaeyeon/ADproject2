@@ -1,5 +1,5 @@
-#from inputBox import *
-from game import wordBox as WB, inputBox as IB
+from game import wordBox as WB
+from game import inputBox as IB
 import pygame, math, sys
 from PyQt5 import QtWidgets as Qt
 
@@ -41,7 +41,7 @@ display_size = (1280, 960)
 size=display_size
 
 def initialize():
-    global screen, textinput, time_term, clock, last_time, enemy, lives, score
+    global screen, textinput, time_term, clock, last_time, enemy, lives, score, producedT
 
     screen = pygame.display.set_mode(size)    #이건 game.py에서 다뤄야함.
 
@@ -59,11 +59,18 @@ def initialize():
     #livses and score
     lives = 1
     score=0
-"""
-def set_speed(sys.argv):
-    try:
-        argv= sys.argv[1:2]
-"""
+
+    #to set each enemy's speed
+    producedT=0
+
+def set_initial_speed(level = "중"):
+    if level == "하":
+        return 1
+    elif level == "중":
+        return 2
+    else:#상
+        return 3
+
 def replay(time):
     screen.fill((255, 255, 255))
     replay_font = pygame.font.Font(None, 50)
@@ -81,31 +88,36 @@ def replay(time):
 
     pygame.display.update()
 
+def isgameover(lives):
+    if not lives:
+
+        waiting = pygame.time.get_ticks() + 10000
+        showing = pygame.time.get_ticks()
+        t = 10
+        R_pressed = False
+        while (waiting > pygame.time.get_ticks() and not (R_pressed)):
+            if showing + 1000 < pygame.time.get_ticks():
+                showing += 1000
+                t -= 1
+            replay(t)
+            events = pygame.event.get()
+            for event in events:
+                if event.type == pygame.QUIT:
+                    exit()
+                elif event.type == pygame.KEYDOWN and event.key == pygame.locals.K_r:
+                    initialize()
+                    R_pressed = True
+                    break
+
+
 
 if __name__ == "__main__":
     pygame.init()
     initialize()
+    level = set_initial_speed()
     while True:
         # game over
-        if not lives:
-
-            waiting = pygame.time.get_ticks() + 10000
-            showing = pygame.time.get_ticks()
-            t = 10
-            R_pressed= False
-            while (waiting > pygame.time.get_ticks() and not(R_pressed)):
-                if showing + 1000 < pygame.time.get_ticks():
-                    showing += 1000
-                    t -= 1
-                replay(t)
-                events = pygame.event.get()
-                for event in events:
-                    if event.type == pygame.QUIT:
-                        exit()
-                    elif event.type == pygame.KEYDOWN and event.key == pygame.locals.K_r:
-                        initialize()
-                        R_pressed = True
-                        break
+        isgameover(lives)
         screen.fill((255, 255, 255))  # 뒷 배경색을 하얀색으로 채움
 
         #draw lives and score
@@ -121,6 +133,8 @@ if __name__ == "__main__":
         #produce enemy( = wordBox )
         if pygame.time.get_ticks() > last_time+time_term:
             enemy = WB.wordBox()
+            enemy.set_speed(level, producedT)
+            producedT+=1
             group.add(enemy)
             last_time+=time_term
 
