@@ -57,11 +57,11 @@ def initialize():
         group.remove(w)
 
     #livses and score
-    lives = 1
+    lives = 5
     score=0
 
     #to set each enemy's speed
-    producedT=0
+    producedT=0+1
 
 def set_initial_speed(level = "중"):
     if level == "하":
@@ -140,7 +140,7 @@ if __name__ == "__main__":
 
         for enemy in group:
             #collision 처리
-            enemy.move(5)
+            enemy.move()
             enemy.surface = enemy.word_font.render(enemy.word, True, (0, 0, 0))
             screen.blit(enemy.surface, (enemy.rect.x+5, enemy.rect.y+5))
             pygame.draw.rect(screen, [0,0,0], enemy.rect, 1)
@@ -162,7 +162,7 @@ if __name__ == "__main__":
         #kill enemy by entering correspending word
         if textinput.get_search():
             for w in group:
-                if textinput.input_string == w.word:
+                if textinput.get_text() == w.word:
                     group.remove(w)
                     score+=100
             textinput.search=False

@@ -114,8 +114,9 @@ class TextInput:
 
                 elif event.key == pl.K_RETURN:  #==enter
                     self.search=True
-                    #self.input_string=self.input_string[self.cursor_position:]
-                    pass
+                    self.temp=self.input_string
+                    self.input_string = ""
+                    self.cursor_position = 0
                    #for w in group:
                     #    if self.input_string == w.word:
                      #       group.remove(w)#단어박스를 죽이는 func이 구현
@@ -200,11 +201,12 @@ class TextInput:
 
     def set_cursor_color(self, color):
         self.cursor_surface.fill(color)
+#    def clear_text(self):
+#        self.input_string = ""
+#        self.cursor_position = 0
 
-    def clear_text(self):
-        self.input_string = ""
-        self.cursor_position = 0
-
+    def get_text(self):
+        return self.temp
     def get_search(self):
         return self.search
 
