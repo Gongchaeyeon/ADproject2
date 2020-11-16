@@ -1,3 +1,4 @@
+import os
 import pickle
 import sys
 from PyQt5.QtWidgets import *
@@ -27,7 +28,7 @@ class main(QWidget):
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
         self.setStyleSheet(self.qss)
 
-        self.dbfilename = 'High.dat'
+        self.dbfilename = 'data/High.dat'
 
         self.db = []
         self.readRankDB()
@@ -111,11 +112,11 @@ class main(QWidget):
         self.radio_value=self.sender().text()
 
         if self.radio_value =='상':  # 난이도에 맞는 데이터 지정
-            self.dbfilename='High.dat'
+            self.dbfilename='data/High.dat'
         elif self.radio_value=='중':
-            self.dbfilename='Middle.dat'
+            self.dbfilename='data/Middle.dat'
         else:
-            self.dbfilename='Low.dat'
+            self.dbfilename='data/Low.dat'
 
         self.readRankDB() # dbfilename에 난이도에 맞는 데이터 넣음
         self.showRankDB()
@@ -155,11 +156,11 @@ class main(QWidget):
         self.table.setText('')
         self.readRankDB()
         for p in sorted(self.db, key=lambda person: person['Score'] , reverse=True):
-            self.table.append('{}={}\t{}={}'.format('ID',p['ID'],'Score',int(p['Score'])))
+            self.table.append('ID={}\tScore={}'.format(p['ID'],int(p['Score'])))
         self.table.setFont(QFont('Arial', 11))
 
     def addRankDB(self):  #-------------- 랭킹 갱신
-        score = 20 # 임시로 점수 지정.
+        score=0
         check=0 # 중복체크
         record=[]
 
@@ -171,6 +172,9 @@ class main(QWidget):
             buttonReply = QMessageBox.question(self, '경고!', '동일한 ID가 존재합니다. \n해당 ID의 Score를 갱신하시겠습니까?',QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             if buttonReply == QMessageBox.Yes: # 중복되어도 실행하는 경우
                 # 게임시작!
+                os.system('python Game.py')
+                score_file = open('data/maxScore', 'r')
+                score = int(score_file.readline())
                 for p in self.db: # 게임이 끝나고 , Score가 기존의 기록보다 클 경우 점수 갱신.
                     if p['ID'] == self.tf1.text():
                         if p['Score'] < score:
@@ -181,6 +185,8 @@ class main(QWidget):
         else: # ID가 중복되지 않았을 때 (게임 끝나고 데이터 기록)
             record = {'ID': self.tf1.text(), 'Score': score}
             self.db += [record]
+
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
