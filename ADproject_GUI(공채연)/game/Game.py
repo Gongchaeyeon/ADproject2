@@ -1,5 +1,5 @@
-from game import wordBox as WB
-from game import inputBox as IB
+import wordBox as WB
+import inputBox as IB
 import pygame, math, sys
 from PyQt5 import QtWidgets as Qt
 
@@ -58,7 +58,7 @@ def initialize():
         group.remove(w)
 
     #livses and score
-    lives = 5
+    lives = 30
     score=0
 
     #to set each enemy's speed
@@ -113,6 +113,8 @@ def isgameover(lives):
                     initialize()
                     R_pressed = True
                     break
+        else:
+            if not R_pressed: exit()
 
 
 
@@ -185,3 +187,4 @@ if __name__ == "__main__":
 # 3. 가운데 정렬
 # 4. 엔터하면 단어 사라지게 만들기
 # 5. enemy(wordBox's instance) width 크기 조정
+# 6. 단어 move 의 rect.move 오버라이드 해서 실수형 가능하게 하기 .
