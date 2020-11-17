@@ -101,6 +101,10 @@ class main(QWidget):
         self.setGeometry(300, 200, 450, 350)
         self.radio_value=''
         self.ra1.setChecked(True)
+
+        fh = open('data/difficulty.dat', 'wb')  # 난이도 초기화
+        pickle.dump('상', fh)
+        fh.close()
     # --------------------------------------------------------디자인 완료
         bt1.clicked.connect(self.startGame)
         bt2.clicked.connect(self.exitGame)
@@ -118,24 +122,40 @@ class main(QWidget):
         else:
             self.dbfilename='data/Low.dat'
 
+        fh = open('data/difficulty.dat', 'wb')
+        pickle.dump(self.radio_value, fh)
+        fh.close()
+
+
         self.readRankDB() # dbfilename에 난이도에 맞는 데이터 넣음
         self.showRankDB()
 
     def startGame(self):
-        if self.tf1.text()=='':
-            QMessageBox.warning(self, 'Error', "ID를 입력하세요.")
-        else:
-            #게임 시작
-            self.addRankDB()
-            self.writeRankDB()
-        self.showRankDB()
+        # 입력한 ID가 영어와 숫자로 이루어졌는지 판단
+        id_check_al = 0
+        id_cehck_num = 0
+        for i in self.tf1.text():
+            if ord('a') <= ord(i) <= ord('z'):
+                id_check_al += 1
+            elif i.isdecimal() == True:
+                id_cehck_num += 1
 
-    def exitGame(self):
-        # self.writeRankDB()  # 나갈 때 저장.
+        if self.tf1.text() == '':
+            QMessageBox.warning(self, 'Error',
+                                "ID를 입력하세요.")  # ▼ 영어,숫자가 아닌 다른 문자가 포함된 경우         ▼ 숫자로만 이루어진 경우                     ▼ 영어로만 이루어진 경우
+        elif len(self.tf1.text()) > 14 or len(self.tf1.text()) < 7 or id_cehck_num + id_check_al != len(
+                self.tf1.text()) or id_cehck_num == len(self.tf1.text()) or id_check_al == len(self.tf1.text()):
+            QMessageBox.warning(self, 'Error', "ID는 영어와 숫자로 이루어진 7~14자리 문자이어야 합니다.")
+            self.tf1.setText('')
+        else: # 조건이 맞으면
+            self.addRankDB() # addRankDB안에 게임 시작 하는 부분 구현됨.
+            self.writeRankDB() # 갱신된 점수 저장
+            self.showRankDB()
+
+    def exitGame(self):  #----------------[게임 종료]
         self.close()
-        # self.show() --> 다시 새로운 창 켜짐
 
-    def readRankDB(self): # 데이터 읽어오기
+    def readRankDB(self): # ----------------------[데이터 읽어오기]
         try:
             fh = open(self.dbfilename,'rb')
         except FileNotFoundError as e:
@@ -147,20 +167,20 @@ class main(QWidget):
             pass
         fh.close()
 
-    def writeRankDB(self): # 데이터 쓰기
+    def writeRankDB(self): # ---------------------[데이터 쓰기]
         fh = open(self.dbfilename,'wb')
         pickle.dump(self.db, fh)
         fh.close()
 
-    def showRankDB(self): # 데이터 table에 띄우기
+    def showRankDB(self): # ---------------------[랭킹 table에 띄우기]
         self.table.setText('')
         self.readRankDB()
         for p in sorted(self.db, key=lambda person: person['Score'] , reverse=True):
-            self.table.append('ID={}\tScore={}'.format(p['ID'],int(p['Score'])))
+            self.table.append(' [{}]  {}\t  {} ->  {}'.format('ID',p['ID'],'Score',int(p['Score'])))
         self.table.setFont(QFont('Arial', 11))
 
     def addRankDB(self):  #-------------- 랭킹 갱신
-        score=0
+        score=0 # 임시로 점수 지정.
         check=0 # 중복체크
         record=[]
 
@@ -173,8 +193,9 @@ class main(QWidget):
             if buttonReply == QMessageBox.Yes: # 중복되어도 실행하는 경우
                 # 게임시작!
                 os.system('python Game.py')
-                score_file = open('data/maxScore', 'r')
-                score = int(score_file.readline())
+                fh = open('data/maxScore.dat', 'rb')
+                score = pickle.load(fh)
+                fh.close()
                 for p in self.db: # 게임이 끝나고 , Score가 기존의 기록보다 클 경우 점수 갱신.
                     if p['ID'] == self.tf1.text():
                         if p['Score'] < score:
@@ -183,6 +204,10 @@ class main(QWidget):
                 self.tf1.setText('')
 
         else: # ID가 중복되지 않았을 때 (게임 끝나고 데이터 기록)
+            os.system('python Game.py')  # 게임 시작!!
+            fh = open('data/maxScore.dat', 'rb')
+            score = pickle.load(fh)
+            fh.close()
             record = {'ID': self.tf1.text(), 'Score': score}
             self.db += [record]
 

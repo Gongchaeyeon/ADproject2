@@ -2,6 +2,7 @@ import wordBox as WB
 import inputBox as IB
 import pygame, math, sys
 from PyQt5 import QtWidgets as Qt
+import pickle
 
 #Sprite Group, enemy를 move 시키기 위해서 필요
 group = pygame.sprite.Group()
@@ -58,20 +59,24 @@ def initialize():
         group.remove(w)
 
     #livses and score
-    lives = 1
+    lives = 5
     score=0
 
     #to set each enemy's speed
     producedT=0+1
 
 def set_initial_speed(level = "중"):
+    fh = open('data/difficulty.dat', 'rb')
+    level = pickle.load(fh)
+    fh.close()
+    print(level)
+
     if level == "하":
-        return 1
+        return 1.2
     elif level == "중":
         return 2
     else:#상
         return 3
-
 #게임 오버 후 화면에 글자 숫자 띄워줌
 def replay(time):
     screen.fill((255, 255, 255))
@@ -93,10 +98,12 @@ def replay(time):
 #게임 오버 후 replay 할 것인지, 끝낼 것인지 결정
 def isgameover(lives, score, MaxScore):
     if not lives:
+        # 가장 큰 점수를 저장함
         maxScore= score if MaxScore<score else MaxScore
-        f1= open('data/maxScore', 'w')
-        f1.write(str(maxScore))
-        f1.close()
+        fh= open('data/maxScore.dat', 'wb')
+        pickle.dump(maxScore, fh)
+        fh.close()
+
         waiting = pygame.time.get_ticks() + 10000
         showing = pygame.time.get_ticks()
         t = 10
