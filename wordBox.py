@@ -35,8 +35,8 @@ class wordBox(pygame.sprite.Sprite):
         self.rect = self.rect.move(self.speed)
 
     def set_speed(self, level, t):
-        #임시로 level*(시간에 대한 무리함수 꼴)
-        self.scalar_speed = level*math.sqrt(t)
+        #임시로 level*(producedT에 대한 무리함수꼴)
+        self.scalar_speed = level*math.pow(t,0.4)
 
 if __name__ == "__main__":
     pygame.font.init()

@@ -126,7 +126,6 @@ class main(QWidget):
         pickle.dump(self.radio_value, fh)
         fh.close()
 
-
         self.readRankDB() # dbfilename에 난이도에 맞는 데이터 넣음
         self.showRankDB()
 

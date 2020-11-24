@@ -50,8 +50,11 @@ def initialize():
     # Create TextInput-object
     textinput = IB.TextInput()
 
+    #to set each enemy's speed
+    producedT=0+1
+
     #단어 생성 시간 간격 ms
-    time_term = 3000
+    time_term = 2000*2**(-producedT)+1000
     clock = pygame.time.Clock()
     last_time = pygame.time.get_ticks()
 
@@ -59,17 +62,14 @@ def initialize():
         group.remove(w)
 
     #livses and score
-    lives = 5
+    lives = 20
     score=0
 
-    #to set each enemy's speed
-    producedT=0+1
 
 def set_initial_speed(level = "중"):
     fh = open('data/difficulty.dat', 'rb')
     level = pickle.load(fh)
     fh.close()
-    print(level)
 
     if level == "하":
         return 1.2
@@ -155,6 +155,7 @@ if __name__ == "__main__":
             enemy.set_speed(level, producedT)
             producedT+=1
             group.add(enemy)
+            # time_term-= 200
             last_time+=time_term
 
         for enemy in group:
