@@ -135,7 +135,7 @@ class main(QWidget):
         id_check_al = 0
         id_cehck_num = 0
         for i in self.tf1.text():
-            if ord('a') <= ord(i) <= ord('z'):
+            if ord('a') <= ord(i) <= ord('z') or ord('A') <= ord(i) <= ord('Z'):
                 id_check_al += 1
             elif i.isdecimal() == True:
                 id_cehck_num += 1

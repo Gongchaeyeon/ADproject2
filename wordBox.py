@@ -15,16 +15,20 @@ class wordBox(pygame.sprite.Sprite):
         self.word_font = pygame.font.Font(None, 30)
         self.surface = self.word_font.render(self.word, True, (0, 0, 0))
         self.scalar_speed = 0
-
+        self.set_float = []
+        self.set_float.append(self.set[0])
+        self.set_float.append(self.set[1])
         xS = X/2 - (self.set[0]+self.w/2)
         yS = Y/2 - (self.set[1]+self.h/2)
-        k = 1/ (math.sqrt(xS * xS + yS * yS))
+        k = 1/ (math.sqrt(xS * xS + yS * yS))   
 
         print(self.word, xS,yS, (k*xS, k*yS))
 
     def move(self):
-        xS = X/2 - (self.set[0]+self.w/2)
-        yS = Y/2 - (self.set[1]+self.h/2)
+        self.set_float[0]+=self.w/2
+        self.set_float[1]+=self.h/2
+        xS = X/2 - self.set_float[0]
+        yS = Y/2 - self.set_float[1]
         k = self.scalar_speed / (math.sqrt(xS * xS + yS * yS))
         self.speed = (k * xS, k * yS)  # 벡터 식
         # scalar_speed는 속력, self.speed는 속도
