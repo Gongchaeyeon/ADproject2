@@ -31,8 +31,8 @@ class TextInput:
             font_family="",
             font_size=30,
             antialias=True,
-            text_color=(0, 0, 0),
-            cursor_color=(0, 0, 1),
+            text_color=(255, 255, 255),
+            cursor_color=(255, 255, 254),
             repeat_keys_initial_ms=400,
             repeat_keys_interval_ms=35,
             max_string_length=-1,
@@ -211,7 +211,7 @@ class TextInput:
         # Blit the text.
         screen.blit(self.surface, (self.rect.x+5, self.rect.y+5))
         # Blit the rect.
-        pygame.draw.rect(screen, (0, 0, 0) , self.rect, 5)
+        pygame.draw.rect(screen, (255,255,255) , self.rect, 5)
 
 
 if __name__ == "__main__":

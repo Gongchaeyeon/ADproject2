@@ -1,5 +1,6 @@
 import wordBox as WB
 import inputBox as IB
+from Background import *
 import pygame, math, sys
 from PyQt5 import QtWidgets as Qt
 import pickle
@@ -7,36 +8,8 @@ import pickle
 #Sprite Group, enemy를 move 시키기 위해서 필요
 group = pygame.sprite.Group()
 
-#https://stackoverflow.com/questions/24727773/detecting-rectangle-collision-with-a-circle
-def collision(rleft, rtop, width, height,   # rectangle definition
-              center_x, center_y, radius):  # circle definition
-    """ Detect collision between a rectangle and circle. """
-
-    # complete boundbox of the rectangle
-    rright, rbottom = rleft + width/2, rtop + height/2
-
-    # bounding box of the circle
-    cleft, ctop     = center_x-radius, center_y-radius
-    cright, cbottom = center_x+radius, center_y+radius
-
-    # trivial reject if bounding boxes do not intersect
-    if rright < cleft or rleft > cright or rbottom < ctop or rtop > cbottom:
-        return False  # no collision possible
-
-    # check whether any point of rectangle is inside circle's radius
-    for x in (rleft, rleft+width):
-        for y in (rtop, rtop+height):
-            # compare distance between circle's center point and each point of
-            # the rectangle with the circle's radius
-            if math.hypot(x-center_x, y-center_y) <= radius:
-                return True  # collision detected
-
-    # check if center of circle is inside rectangle
-    if rleft <= center_x <= rright and rtop <= center_y <= rbottom:
-        return True  # overlaid
-
-    return False  # no collision detected
-
+#bakcground
+BackGround = Background("data/image/space.png")
 #size of window
 display_size = (1280, 960)
 size=display_size
@@ -51,10 +24,10 @@ def initialize():
     textinput = IB.TextInput()
 
     #to set each enemy's speed
-    producedT=0+1
+    producedT=0+0.1
 
     #단어 생성 시간 간격 ms
-    time_term = 2000*2**(-producedT)+1000
+    time_term = 2300*(1/(4*producedT+0.9))+700
     clock = pygame.time.Clock()
     last_time = pygame.time.get_ticks()
 
@@ -62,7 +35,7 @@ def initialize():
         group.remove(w)
 
     #livses and score
-    lives = 20
+    lives = 5
     score=0
 
 
@@ -135,8 +108,9 @@ if __name__ == "__main__":
     level = set_initial_speed()
     while True:
         # game over
-        isgameover(lives, score, MaxScore)
-        screen.fill((255, 255, 255))  # 뒷 배경색을 하얀색으로 채움
+        #isgameover(lives, score, MaxScore)
+        screen.fill((255,255,255))
+        screen.blit(BackGround.image, BackGround.rect)  # 뒷 배경색을 하얀색으로 채움
 
         #라이프, 점수 표시 draw lives and score
         for i in range(lives):
@@ -153,23 +127,24 @@ if __name__ == "__main__":
         if pygame.time.get_ticks() > last_time+time_term:
             enemy = WB.wordBox()
             enemy.set_speed(level, producedT)
-            producedT+=1
+            producedT+=0.1
+            print(time_term)
             group.add(enemy)
-            # time_term-= 200
+            time_term = 1500 * (1 / (1* producedT + 0.9)) + 1500
             last_time+=time_term
 
         for enemy in group:
             #단어박스 움직임
             enemy.move()
-            enemy.surface = enemy.word_font.render(enemy.word, True, (0, 0, 0))
             screen.blit(enemy.surface, (enemy.rect.x+5, enemy.rect.y+5))
-            pygame.draw.rect(screen, [0,0,0], enemy.rect, 1)
-
+            pygame.draw.rect(screen, [255, 255, 255], enemy.rect, 1)
+            """
             #collision(충돌)시 단어(enemy) 제거 , 라이프 깎임
             if collision(enemy.rect.x, enemy.rect.y, enemy.rect.w, enemy.rect.h,
                          size[0]/2, size[1]/2, 170):
                 group.remove(enemy)
                 lives-=1
+            """
 
         events = pygame.event.get()
         for event in events:
@@ -200,3 +175,34 @@ if __name__ == "__main__":
 # 4. 엔터하면 단어 사라지게 만들기
 # 5. enemy(wordBox's instance) width 크기 조정
 # 6. 단어 move 의 rect.move 오버라이드 해서 실수형 가능하게 하기 .
+"""
+#https://stackoverflow.com/questions/24727773/detecting-rectangle-collision-with-a-circle
+def collision(rleft, rtop, width, height,   # rectangle definition
+              center_x, center_y, radius):  # circle definition
+
+
+    # complete boundbox of the rectangle
+    rright, rbottom = rleft + width, rtop + height
+
+    # bounding box of the circle
+    cleft, ctop     = center_x-radius, center_y-radius
+    cright, cbottom = center_x+radius, center_y+radius
+
+    # trivial reject if bounding boxes do not intersect
+    if rright < cleft or rleft > cright or rbottom < ctop or rtop > cbottom:
+        return False  # no collision possible
+
+    # check whether any point of rectangle is inside circle's radius
+    for x in (rleft, rleft+width):
+        for y in (rtop, rtop+height):
+            # compare distance between circle's center point and each point of
+            # the rectangle with the circle's radius
+            if math.hypot(x-center_x, y-center_y) <= radius:
+                return True  # collision detected
+
+    # check if center of circle is inside rectangle
+    if rleft <= center_x <= rright and rtop <= center_y <= rbottom:
+        return True  # overlaid
+
+    return False  # no collision detected
+"""
