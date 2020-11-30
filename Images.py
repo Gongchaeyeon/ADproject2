@@ -6,7 +6,5 @@ class Background(pygame.sprite.Sprite):
         image = pygame.image.load(image_file)
         self.image = pygame.transform.scale(image, (1280, 960))
         self.rect = self.image.get_rect()
-        self.rect.width = 1280
-        self.rect.height = 960
         self.rect.left, self.rect.top = location
         print(self.rect)
