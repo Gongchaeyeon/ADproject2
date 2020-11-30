@@ -122,11 +122,10 @@ if __name__ == "__main__":
     level = set_initial_speed()
     while True:
         # game over
-        #isgameover(lives, score, MaxScore)
+        isgameover(lives, score, MaxScore)
 
         #배경 이미지 (우주) screen에 붙여넣기
         screen.blit(background.image, background.location)
-
         #라이프, 점수 표시 draw lives and score
         for i in range(lives):
             pygame.draw.circle(screen, (200, 0, 130), (30+30*i, 900), 10)
@@ -134,8 +133,10 @@ if __name__ == "__main__":
         score_surface=score_font.render("score: {}".format(score), 1, (255, 255, 255))
         screen.blit(score_surface, (30, 930))
 
-        # 지구 그리기 draw circle
+        #지구 screen에 붙이기
         screen.blit(earth.image, (size[0]/2-earth.r, size[1]/2-earth.r))
+        # 확인 코드 : 지구 주변에 중력효과가 작용되는 원 그리기
+        pygame.draw.circle(screen, (255, 255 , 255), (size[0]/2, size[1]/2), 300, 5)
 
         #단어박스 생성, produce enemy( = wordBox )
         if pygame.time.get_ticks() > last_time+time_term:
@@ -149,18 +150,21 @@ if __name__ == "__main__":
             print("생성된 애들: {}".format(int(producedT * 10))) #확인용 코드
 
         for enemy in group:
-            #단어박스 움직임
-            enemy.move()
             #운석 이미지 생성위치 -> 뺄 숫자 바꿔주면서 글자랑 위치 조정했음
             meteor_location=[enemy.rect.x-15, enemy.rect.y-30]
+            # 단어박스 움직임
+            enemy.move((size[0]/2-30, size[1]/2), (meteor_location[0]+meteor.r, meteor_location[1]+meteor.r))
             #운석, 단어 screen에 붙여넣기
             screen.blit(meteor.image, meteor_location)
             screen.blit(enemy.surface, (enemy.rect.x+5, enemy.rect.y+5))
 
+            #확인 코드 : 운석 주변 원 표시 -> 중력 효과 적용 보기 위해서
+            pygame.draw.circle(screen, (255, 255, 0), (meteor_location[0]+50, meteor_location[1]+50), meteor.r, 2)
+
             meteor_location[0]+=enemy.speed[0]
             meteor_location[1]+=enemy.speed[1]
             #운석이 지구와 부딪히면
-            if meteor.collision((size[0]/2-30, size[1]/2), earth.r - 70, (meteor_location[0]-30,meteor_location[1])):
+            if meteor.collision((size[0]/2-30, size[1]/2), earth.r - 70, (meteor_location[0]-30, meteor_location[1])):
                 #group에서 enemy(단어) 제거 -> 화면에서 사라지는 효과
                 group.remove(enemy)
                 lives-=1
