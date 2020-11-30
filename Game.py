@@ -1,7 +1,7 @@
 import wordBox as WB
 import inputBox as IB
-import pygame, math, sys, os
-# from PyQt5 import QtWidgets as Qt
+import pygame, math, sys
+
 import pickle
 import tkinter as tk
 from tkinter import *
@@ -11,8 +11,6 @@ Tk().wm_withdraw()
 #Sprite Group, enemy를 move 시키기 위해서 필요
 group = pygame.sprite.Group()
 
-# file = 'background.wav'
-# pygame.init()
 #https://stackoverflow.com/questions/24727773/detecting-rectangle-collision-with-a-circle
 def collision(rleft, rtop, width, height,   # rectangle definition
               center_x, center_y, radius):  # circle definition
@@ -144,6 +142,7 @@ if __name__ == "__main__":
     pygame.init()
     pygame.mixer.init()
 
+    # 배경음악 재생
     backgroundSound = pygame.mixer.Sound('data/sounds/background.wav')
     backgroundSound.set_volume(0.8)
     backgroundSound.play(-1)
@@ -163,8 +162,6 @@ if __name__ == "__main__":
         score_font=pygame.font.Font(None, 30)
         score_surface=score_font.render("score: {}".format(score), 1, (0, 0, 0))
         screen.blit(score_surface, (30, 930))
-
-        # pygame.draw.rect(screen, (10,25,124),(1150,10,120,40))
 
         #핵 그리기 draw circle
         pygame.draw.circle(screen, (10, 25, 124),(size[0]/2, size[1]/2) ,170, 5)
