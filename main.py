@@ -106,11 +106,20 @@ class main(QWidget):
         pickle.dump('상', fh)
         fh.close()
     # --------------------------------------------------------디자인 완료
+
+        self.tf1.returnPressed.connect(self.startGame)
         bt1.clicked.connect(self.startGame)
         bt2.clicked.connect(self.exitGame)
         self.ra1.clicked.connect(self.radioClicked)
         self.ra2.clicked.connect(self.radioClicked)
         self.ra3.clicked.connect(self.radioClicked)
+
+    def keyPressEvent(self,e):
+        if e.key() == Qt.Key_Escape:
+            exit()
+
+    def IdEnter(self):
+        self.startGame()
 
     def radioClicked(self):
         self.radio_value=self.sender().text()
@@ -140,10 +149,8 @@ class main(QWidget):
                 id_cehck_num += 1
 
         if self.tf1.text() == '':
-            QMessageBox.warning(self, 'Error',
-                                "ID를 입력하세요.")  # ▼ 영어,숫자가 아닌 다른 문자가 포함된 경우         ▼ 숫자로만 이루어진 경우                     ▼ 영어로만 이루어진 경우
-        elif len(self.tf1.text()) > 14 or len(self.tf1.text()) < 7 or id_cehck_num + id_check_al != len(
-                self.tf1.text()) or id_cehck_num == len(self.tf1.text()) or id_check_al == len(self.tf1.text()):
+            QMessageBox.warning(self, 'Error',"ID를 입력하세요.")  # ▼ 영어,숫자가 아닌 다른 문자가 포함된 경우         ▼ 숫자로만 이루어진 경우                                   ▼ 영어로만 이루어진 경우
+        elif len(self.tf1.text()) > 14 or len(self.tf1.text()) < 7 or id_cehck_num + id_check_al != len(self.tf1.text()) or id_cehck_num == len(self.tf1.text()) or id_check_al == len(self.tf1.text()):
             QMessageBox.warning(self, 'Error', "ID는 영어와 숫자로 이루어진 7~14자리 문자이어야 합니다.")
             self.tf1.setText('')
         else: # 조건이 맞으면
@@ -209,8 +216,6 @@ class main(QWidget):
             fh.close()
             record = {'ID': self.tf1.text(), 'Score': score}
             self.db += [record]
-
-
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

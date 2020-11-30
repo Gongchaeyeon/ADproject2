@@ -1,12 +1,18 @@
 import wordBox as WB
 import inputBox as IB
-import pygame, math, sys
-from PyQt5 import QtWidgets as Qt
+import pygame, math, sys, os
+# from PyQt5 import QtWidgets as Qt
 import pickle
+import tkinter as tk
+from tkinter import *
+from tkinter import messagebox
+Tk().wm_withdraw()
 
 #Sprite Group, enemy를 move 시키기 위해서 필요
 group = pygame.sprite.Group()
 
+# file = 'background.wav'
+# pygame.init()
 #https://stackoverflow.com/questions/24727773/detecting-rectangle-collision-with-a-circle
 def collision(rleft, rtop, width, height,   # rectangle definition
               center_x, center_y, radius):  # circle definition
@@ -43,7 +49,8 @@ size=display_size
 
 #화면, 입력박스, 단어박스들, 라이프, 점수등 초기화
 def initialize():
-    global screen, textinput, time_term, clock, last_time, enemy, lives, score, producedT
+    global screen, textinput, time_term, clock, last_time, enemy, lives, score, producedT, maxScore
+    maxScore =0
 
     screen = pygame.display.set_mode(size)
 
@@ -62,7 +69,7 @@ def initialize():
         group.remove(w)
 
     #livses and score
-    lives = 20
+    lives = 5
     score=0
 
 
@@ -77,21 +84,25 @@ def set_initial_speed(level = "중"):
         return 2
     else:#상
         return 3
+
 #게임 오버 후 화면에 글자 숫자 띄워줌
-def replay(time):
+def replay(time,maxScore):
+
     screen.fill((255, 255, 255))
     replay_font = pygame.font.Font(None, 50)
     replay_string1 = "Game Over!"
+    replay_score = "score: " + str(maxScore)
     replay_string2 = "press key R to replay"
     replay_string3 = "{}".format(time)
     replay_surface1 = replay_font.render(replay_string1, 1, (0, 0, 0))
-    replay_surface2 = replay_font.render(replay_string2, 1, (0, 0, 0))
-    replay_surface3 = replay_font.render(replay_string3, 1, (0, 0, 0))
+    replay_surface2 = replay_font.render(replay_score, 1, (0, 0, 0))
+    replay_surface3 = replay_font.render(replay_string2, 1, (0, 0, 0))
+    replay_surface4 = replay_font.render(replay_string3, 1, (0, 0, 0))
 
-    screen.blit(replay_surface1, (400, 300))
-    screen.blit(replay_surface2, (400, 400))
-    screen.blit(replay_surface3, (400, 500))
-
+    screen.blit(replay_surface1, (550, 300))
+    screen.blit(replay_surface2, (563-(((len(replay_score)-7)/10)*2), 360))
+    screen.blit(replay_surface3, (470, 420))
+    screen.blit(replay_surface4, (630, 480))
 
     pygame.display.update()
 
@@ -113,7 +124,7 @@ def isgameover(lives, score, MaxScore):
             if showing + 1000 < pygame.time.get_ticks():
                 showing += 1000
                 t -= 1
-            replay(t)
+            replay(t,maxScore)
             events = pygame.event.get()
             for event in events:
                 if event.type == pygame.QUIT:
@@ -131,8 +142,15 @@ MaxScore=0
 
 if __name__ == "__main__":
     pygame.init()
+    pygame.mixer.init()
+
+    backgroundSound = pygame.mixer.Sound('data/sounds/background.wav')
+    backgroundSound.set_volume(0.8)
+    backgroundSound.play(-1)
+
     initialize()
     level = set_initial_speed()
+
     while True:
         # game over
         isgameover(lives, score, MaxScore)
@@ -145,6 +163,8 @@ if __name__ == "__main__":
         score_font=pygame.font.Font(None, 30)
         score_surface=score_font.render("score: {}".format(score), 1, (0, 0, 0))
         screen.blit(score_surface, (30, 930))
+
+        # pygame.draw.rect(screen, (10,25,124),(1150,10,120,40))
 
         #핵 그리기 draw circle
         pygame.draw.circle(screen, (10, 25, 124),(size[0]/2, size[1]/2) ,170, 5)
@@ -166,25 +186,28 @@ if __name__ == "__main__":
             pygame.draw.rect(screen, [0,0,0], enemy.rect, 1)
 
             #collision(충돌)시 단어(enemy) 제거 , 라이프 깎임
-            if collision(enemy.rect.x, enemy.rect.y, enemy.rect.w, enemy.rect.h,
-                         size[0]/2, size[1]/2, 170):
+            if collision(enemy.rect.x, enemy.rect.y, enemy.rect.w, enemy.rect.h,size[0]/2, size[1]/2, 170):
                 group.remove(enemy)
+
+                # 부딪히는 효과음
+                hit = pygame.mixer.Sound('data/sounds/쿠르를.wav')
+                hit.set_volume(1)
+                hit.play()
                 lives-=1
-
-        events = pygame.event.get()
-        for event in events:
-            if event.type == pygame.QUIT:
-                exit()
-
-        # Feed it with events every frame
-        textinput.update(events)
 
         #단어 입력시, 해당 단어박스 없앰 kill enemy by entering correspending word
         if textinput.get_search():
             for w in group:
                 if textinput.get_text() == w.word:
                     group.remove(w)
+
+                    # 단어 맞췄을 때 효과음
+                    s_sound= pygame.mixer.Sound('data/sounds/마리오.wav')
+                    s_sound.set_volume(0.7)
+                    s_sound.play()
+
                     score+=100
+
             textinput.search=False
 
         # Blit its surface onto the screen
@@ -192,6 +215,12 @@ if __name__ == "__main__":
         pygame.display.update()
         clock.tick(30)
 
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                if (tk.messagebox.askyesno('경고!', '게임을 중단하면 결과가 저장되지 않습니다. \n게임을 종료하시겠습니까?', icon='error') == True):
+                    exit()
+        textinput.update(events)
 
 #개선해야 할점
 # 1. enemy(wordBox's instance) remove 하는 방법  Game.py line 87, inputBox.py line 115
