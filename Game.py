@@ -26,7 +26,7 @@ meteor = Meteor("data/image/meteor.png", 50)
 
 #화면, 입력박스, 단어박스들, 라이프, 점수등 초기화
 def initialize():
-    global screen, textinput, time_term, clock, last_time, enemy, lives, score, producedT, eney_death, maxScore
+    global screen, textinput, time_term, clock, last_time, enemy, lives, score, producedT, enemy_death, maxScore
     maxScore =0
 
     screen = pygame.display.set_mode(size)
@@ -50,7 +50,7 @@ def initialize():
         group.remove(w)
 
     #livses and score
-    lives = 5
+    lives = 20
     score=0
 
     enemy_death = 0 #move함수 실험용 변수: 충돌한 행성 갯수
@@ -61,11 +61,11 @@ def set_initial_speed():
     fh.close()
 
     if level == "하":
-        return 1.2
-    elif level == "중":
         return 2
-    else:#상
+    elif level == "중":
         return 3
+    else:#상
+        return 4
 
 #게임 오버 후 화면에 글자 숫자 띄워줌
 def replay(time,maxScore):
@@ -131,7 +131,7 @@ if __name__ == "__main__":
 
     # 배경음악 재생
     backgroundSound = pygame.mixer.Sound('data/sounds/background.wav')
-    backgroundSound.set_volume(0.8)
+    backgroundSound.set_volume(0.1)
     backgroundSound.play(-1)
 
     initialize()
@@ -157,13 +157,17 @@ if __name__ == "__main__":
 
         #단어박스 생성, produce enemy( = wordBox )
         if pygame.time.get_ticks() > last_time+time_term:
+
             enemy = WB.wordBox()
             enemy.set_speed(level, producedT)
+            group.add(enemy)
+
             producedT+=0.1
             print(time_term)    #시간 간격 확인용 출력문
-            group.add(enemy)
+
             time_term = 1500 * (1 / (1* producedT + 0.9)) + 1500
             last_time+=time_term
+
             print("생성된 애들: {}".format(int(producedT * 10))) #확인용 코드
 
         for enemy in group:
@@ -194,11 +198,17 @@ if __name__ == "__main__":
                 
                 enemy_death+=1
                 print("죽은 애들: {}".format(enemy_death))  #move함수 확인용 코드 -> 360개중 360개 정확히 충돌함
-        #사용자로부터 이벤트 받음
-        events = pygame.event.get()
-        
-        # 매 프레임마다 이벤트를 준다,Feed it with events every frame -> 입력 박스에 글자가 써지고 지워지는 것, 엔터누르면 입력되는 것..
+
+        events = pygame.event.get() #사용자로부터 이벤트 받음
+        for event in events:
+            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                if (tk.messagebox.askyesno('경고!', '게임을 중단하면 결과가 저장되지 않습니다. \n게임을 종료하시겠습니까?', icon='error') == True):
+                    exit()
+                else:
+                    last_time=pygame.time.get_ticks()
+
         textinput.update(events)
+        # 매 프레임마다 이벤트를 준다,Feed it with events every frame -> 입력 박스에 글자가 써지고 지워지는 것, 엔터누르면 입력되는 것..
 
         #단어 입력시(엔터) group내에 같은 글자를 가진게 있으면, 해당 단어박스 없앰. kill enemy by entering correspending word
         if textinput.get_search():
@@ -208,7 +218,7 @@ if __name__ == "__main__":
 
                     # 단어 맞췄을 때 효과음
                     s_sound= pygame.mixer.Sound('data/sounds/마리오.wav')
-                    s_sound.set_volume(0.7)
+                    s_sound.set_volume(0.3)
                     s_sound.play()
 
                     score+=100
@@ -222,14 +232,6 @@ if __name__ == "__main__":
         #screen을 업데이트 시켜서 화면에 보이도록 함
         pygame.display.update()
         clock.tick(30)
-
-        events = pygame.event.get()
-        for event in events:
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-                if (tk.messagebox.askyesno('경고!', '게임을 중단하면 결과가 저장되지 않습니다. \n게임을 종료하시겠습니까?', icon='error') == True):
-                    exit()
-        textinput.update(events)
-
 
 #개선해야 할점
 # 3. 가운데 정렬
