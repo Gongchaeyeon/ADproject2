@@ -211,7 +211,7 @@ class TextInput:
         # Blit the text.
         screen.blit(self.surface, (self.rect.x+5, self.rect.y+5))
         # Blit the rect.
-        pygame.draw.rect(screen, (0, 0, 0) , self.rect, 5)
+        pygame.draw.rect(screen, (255,255,255) , self.rect, 5)
 
 
 if __name__ == "__main__":

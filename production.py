@@ -23,11 +23,13 @@ def makeWord():
 
 def makeSet(X, Y):
 
+    #난수 나오는 범위 조정
     if random.randint(0,1): #위 또는 아래에서 나올때
         x= random.choice((0, X))    #모서리 중 하나
-        y= random.randint(0, Y)
+        y= random.randrange(0, Y, 5)
+
     else:
-        x= random.randint(0, X)
+        x= random.randrange(0, X, 5)
         y= random.choice((0, Y))
 
     return (x, y)
