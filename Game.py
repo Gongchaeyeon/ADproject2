@@ -157,13 +157,17 @@ if __name__ == "__main__":
 
         #단어박스 생성, produce enemy( = wordBox )
         if pygame.time.get_ticks() > last_time+time_term:
+
             enemy = WB.wordBox()
             enemy.set_speed(level, producedT)
+            group.add(enemy)
+
             producedT+=0.1
             print(time_term)    #시간 간격 확인용 출력문
-            group.add(enemy)
+
             time_term = 1500 * (1 / (1* producedT + 0.9)) + 1500
             last_time+=time_term
+
             print("생성된 애들: {}".format(int(producedT * 10))) #확인용 코드
 
         for enemy in group:
@@ -200,6 +204,9 @@ if __name__ == "__main__":
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 if (tk.messagebox.askyesno('경고!', '게임을 중단하면 결과가 저장되지 않습니다. \n게임을 종료하시겠습니까?', icon='error') == True):
                     exit()
+                else:
+                    last_time=pygame.time.get_ticks()
+
         textinput.update(events)
         # 매 프레임마다 이벤트를 준다,Feed it with events every frame -> 입력 박스에 글자가 써지고 지워지는 것, 엔터누르면 입력되는 것..
 
