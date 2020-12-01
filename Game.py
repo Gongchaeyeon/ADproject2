@@ -2,8 +2,12 @@ import wordBox as WB
 import inputBox as IB
 from Images import *    #Background, Earth, Meteor class
 import pygame, math, sys
-from PyQt5 import QtWidgets as Qt
+
 import pickle
+import tkinter as tk
+from tkinter import *
+from tkinter import messagebox
+Tk().wm_withdraw()
 
 #Sprite Group, enemy를 move 시키기 위해서 필요
 group = pygame.sprite.Group()
@@ -22,7 +26,8 @@ meteor = Meteor("data/image/meteor.png", 50)
 
 #화면, 입력박스, 단어박스들, 라이프, 점수등 초기화
 def initialize():
-    global screen, textinput, time_term, clock, last_time, enemy, lives, score, producedT, enemy_death
+    global screen, textinput, time_term, clock, last_time, enemy, lives, score, producedT, eney_death, maxScore
+    maxScore =0
 
     screen = pygame.display.set_mode(size)
 
@@ -63,19 +68,23 @@ def set_initial_speed():
         return 3
 
 #게임 오버 후 화면에 글자 숫자 띄워줌
-def replay(time):
+def replay(time,maxScore):
+
     screen.fill((255, 255, 255))
     replay_font = pygame.font.Font(None, 50)
     replay_string1 = "Game Over!"
+    replay_score = "score: " + str(maxScore)
     replay_string2 = "press key R to replay"
     replay_string3 = "{}".format(time)
     replay_surface1 = replay_font.render(replay_string1, 1, (0, 0, 0))
-    replay_surface2 = replay_font.render(replay_string2, 1, (0, 0, 0))
-    replay_surface3 = replay_font.render(replay_string3, 1, (0, 0, 0))
+    replay_surface2 = replay_font.render(replay_score, 1, (0, 0, 0))
+    replay_surface3 = replay_font.render(replay_string2, 1, (0, 0, 0))
+    replay_surface4 = replay_font.render(replay_string3, 1, (0, 0, 0))
 
-    screen.blit(replay_surface1, (400, 300))
-    screen.blit(replay_surface2, (400, 400))
-    screen.blit(replay_surface3, (400, 500))
+    screen.blit(replay_surface1, (550, 300))
+    screen.blit(replay_surface2, (563-(((len(replay_score)-7)/10)*2), 360))
+    screen.blit(replay_surface3, (470, 420))
+    screen.blit(replay_surface4, (630, 480))
 
     pygame.display.update()
 
@@ -98,7 +107,7 @@ def isgameover(lives, score, MaxScore):
             if showing + 1000 < pygame.time.get_ticks():
                 showing += 1000
                 t -= 1
-            replay(t)
+            replay(t,maxScore)
             events = pygame.event.get()
             for event in events:
                 #종료버튼을 누르면
@@ -118,8 +127,16 @@ MaxScore=0
 
 if __name__ == "__main__":
     pygame.init()
+    pygame.mixer.init()
+
+    # 배경음악 재생
+    backgroundSound = pygame.mixer.Sound('data/sounds/background.wav')
+    backgroundSound.set_volume(0.8)
+    backgroundSound.play(-1)
+
     initialize()
     level = set_initial_speed()
+
     while True:
         # game over
         isgameover(lives, score, MaxScore)
@@ -158,6 +175,7 @@ if __name__ == "__main__":
             screen.blit(meteor.image, meteor_location)
             screen.blit(enemy.surface, (enemy.rect.x+5, enemy.rect.y+5))
 
+
             #확인 코드 : 운석 주변 원 표시 -> 중력 효과 적용 보기 위해서
             pygame.draw.circle(screen, (255, 255, 0), (meteor_location[0]+50, meteor_location[1]+50), meteor.r, 2)
 
@@ -167,17 +185,18 @@ if __name__ == "__main__":
             if meteor.collision((size[0]/2-30, size[1]/2), earth.r - 70, (meteor_location[0]-30, meteor_location[1])):
                 #group에서 enemy(단어) 제거 -> 화면에서 사라지는 효과
                 group.remove(enemy)
+                
+                # 부딪히는 효과음
+                hit = pygame.mixer.Sound('data/sounds/쿠르를.wav')
+                hit.set_volume(1)
+                hit.play()
                 lives-=1
+                
                 enemy_death+=1
                 print("죽은 애들: {}".format(enemy_death))  #move함수 확인용 코드 -> 360개중 360개 정확히 충돌함
         #사용자로부터 이벤트 받음
         events = pygame.event.get()
-
-        for event in events:
-            #종료버튼 누르면 게임 종료
-            if event.type == pygame.QUIT:
-                exit()
-
+        
         # 매 프레임마다 이벤트를 준다,Feed it with events every frame -> 입력 박스에 글자가 써지고 지워지는 것, 엔터누르면 입력되는 것..
         textinput.update(events)
 
@@ -186,8 +205,15 @@ if __name__ == "__main__":
             for w in group:
                 if textinput.get_text() == w.word:
                     group.remove(w)
+
+                    # 단어 맞췄을 때 효과음
+                    s_sound= pygame.mixer.Sound('data/sounds/마리오.wav')
+                    s_sound.set_volume(0.7)
+                    s_sound.play()
+
                     score+=100
                     enemy_death += 1
+                    
             textinput.search=False
 
         #텍스트박스 screen에 붙여기 Blit its surface onto the screen
@@ -196,6 +222,14 @@ if __name__ == "__main__":
         #screen을 업데이트 시켜서 화면에 보이도록 함
         pygame.display.update()
         clock.tick(30)
+
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                if (tk.messagebox.askyesno('경고!', '게임을 중단하면 결과가 저장되지 않습니다. \n게임을 종료하시겠습니까?', icon='error') == True):
+                    exit()
+        textinput.update(events)
+
 
 #개선해야 할점
 # 3. 가운데 정렬
@@ -209,4 +243,3 @@ if __name__ == "__main__":
 
 # 1. enemy(wordBox's instance) remove 하는 방법  Game.py line 87, inputBox.py line 115
 # 4. 엔터하면 단어 사라지게 만들기
-
