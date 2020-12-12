@@ -1,5 +1,6 @@
 소프트웨어 구조 설계(Architecture Design)
-모듈: production.p
+
+모듈: production.py
 역할: 무작위의 단어와 위치를 반환, main으로 실행했을 때는 사용자가 word.txt에 직접 새로운 단어를 입력하면 word.dat(binary file)에도 추가
 
 모듈: wordBox.py
