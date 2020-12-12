@@ -173,7 +173,7 @@ if __name__ == "__main__":
         for enemy in group:
             #운석 이미지 생성위치 -> 뺄 숫자 바꿔주면서 글자랑 위치 조정했음
             meteor_location=[enemy.rect.x-15, enemy.rect.y-30]
-            # 단어박스 움직임
+            # 단어박스 움직임 size = (1280, 960)
             enemy.move((size[0]/2-30, size[1]/2), (meteor_location[0]+meteor.r, meteor_location[1]+meteor.r))
             #운석, 단어 screen에 붙여넣기
             screen.blit(meteor.image, meteor_location)
@@ -183,8 +183,10 @@ if __name__ == "__main__":
             #확인 코드 : 운석 주변 원 표시 -> 중력 효과 적용 보기 위해서
             pygame.draw.circle(screen, (255, 255, 0), (meteor_location[0]+50, meteor_location[1]+50), meteor.r, 2)
 
+            #meteor 이동
             meteor_location[0]+=enemy.speed[0]
             meteor_location[1]+=enemy.speed[1]
+
             #운석이 지구와 부딪히면
             if meteor.collision((size[0]/2-30, size[1]/2), earth.r - 70, (meteor_location[0]-30, meteor_location[1])):
                 #group에서 enemy(단어) 제거 -> 화면에서 사라지는 효과
@@ -211,6 +213,8 @@ if __name__ == "__main__":
         # 매 프레임마다 이벤트를 준다,Feed it with events every frame -> 입력 박스에 글자가 써지고 지워지는 것, 엔터누르면 입력되는 것..
 
         #단어 입력시(엔터) group내에 같은 글자를 가진게 있으면, 해당 단어박스 없앰. kill enemy by entering correspending word
+        #Game.py에서 inputBox 클래스를 이미 import 했음, 단어제거 메소드를 inputBox.py에 구현하려면 Game.py를 import해야하는데 이는 에러를 야기함
+        # -> 그래서 엔터가 눌리면 search를 true로 반환 시키고, 이때마다 Game.py에서 단어박스 제거의 기능을 시행하도록 함
         if textinput.get_search():
             for w in group:
                 if textinput.get_text() == w.word:

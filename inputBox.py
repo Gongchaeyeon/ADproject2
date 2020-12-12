@@ -186,9 +186,6 @@ class TextInput:
     def get_surface(self):
         return self.surface
 
-    def get_text(self):
-        return self.input_string
-
     def get_cursor_position(self):
         return self.cursor_position
 
@@ -197,9 +194,6 @@ class TextInput:
 
     def set_cursor_color(self, color):
         self.cursor_surface.fill(color)
-#    def clear_text(self):
-#        self.input_string = ""
-#        self.cursor_position = 0
 
     def get_text(self):
         return self.temp
