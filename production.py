@@ -15,10 +15,13 @@ def inputWords():
     f2.close()
 
 def makeWord():
-    f=open(pickle_f, 'rb')
-    word_dic= pickle.load(f)
-    word = random.choice(word_dic)
-    f.close()
+    try:
+        f=open(pickle_f, 'rb')
+        word_dic= pickle.load(f)
+        word = random.choice(word_dic)
+        f.close()
+    except FileNotFoundError as e:
+        word = "FileNotFoundError"
     return word
 
 def makeSet(X, Y):

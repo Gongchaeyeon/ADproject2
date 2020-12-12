@@ -31,7 +31,7 @@
 -enter() : inputBox의 문자열 == wordBox 객체의 문자열 ->죽임
 -cnt(scrore) 죽이면 횟수 올라감
 
-3. game
+3. Game
 -animate(): 화면을 바꾸는 메소드
  --충돌 감지하는 조건문 -> 라이프차감
  --점수, 라이프 ,난이도 표시
@@ -49,7 +49,8 @@ main class 내 method
 main class 밖 method
 -writeRankDB(): 게임오버 됬을 때 랭크 기록 메소드 
 
-5. gameover
--replay(): 게임을 재시작 시킴 
+5. gameover - > Game에 통합 시킴
+-replay(): 게임을 재시작 시킴
+
 
 

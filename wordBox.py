@@ -30,14 +30,15 @@ class wordBox(pygame.sprite.Sprite):
         g=2
         if distance>300:
             self.rect = self.rect.move(self.speed)
+            return 0
         else:
             self.rect = self.rect.move((g*self.speed[0], g*self.speed[1]))
+            return 1
 
     def set_speed(self, level, t):
         #임시로 level*(producedT에 대한 무리함수꼴)
         #
         tmp=level*(t+0.9)**0.1
-        print("levlel {}".format(level))
         self.scalar_speed = tmp if tmp<4 else 4
         self.set_float = [self.set[0] + self.w / 2, self.set[1] + self.h / 2]
         self.initial_xS = X / 2 - self.set_float[0]
@@ -48,9 +49,11 @@ class wordBox(pygame.sprite.Sprite):
 
         #self.scalar_speed = 5 - level
         #속력은 2*10^0.4 -> 약 5를 마지노선으로 잡고 가자
+
         #확인용 코드
-        print(self.word, self.initial_xS, self.initial_yS, (self.initial_k * self.initial_xS, self.initial_k * self.initial_yS), end='     ')
-        print(self.scalar_speed, self.speed, end = '     ')
+        #print("levlel {}".format(level))
+        #print(self.word, self.initial_xS, self.initial_yS, (self.initial_k * self.initial_xS, self.initial_k * self.initial_yS), end='     ')
+        #print(self.scalar_speed, self.speed, end = '     ')
 if __name__ == "__main__":
     pygame.font.init()
     w=wordBox()
