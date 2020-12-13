@@ -20,8 +20,7 @@ meteor = Meteor("data/image/meteor.png", 50) #Meteor
 
 
 def initialize():  #화면, 입력박스, 단어박스들, 라이프, 점수등 초기화
-    global screen, textinput, time_term, clock, last_time, enemy, lives, score, producedT, enemy_death, maxScore
-    maxScore =0
+    global screen, textinput, time_term, clock, last_time, enemy, lives, score, producedT, enemy_death
 
     screen = pygame.display.set_mode(size)
 
@@ -61,12 +60,12 @@ def set_initial_speed():
         return 4
 
 #게임 오버 후 화면에 글자 숫자 띄워줌
-def replay(time,maxScore):
+def replay(time,score):
 
     screen.fill((255, 255, 255))
     replay_font = pygame.font.Font(None, 50)
     replay_string1 = "Game Over!"
-    replay_score = "score: " + str(maxScore)
+    replay_score = "score: " + str(score)
     replay_string2 = "press key R to replay"
     replay_string3 = "{}".format(time)
     replay_surface1 = replay_font.render(replay_string1, 1, (0, 0, 0))
@@ -82,13 +81,13 @@ def replay(time,maxScore):
     pygame.display.update()
 
 #게임 오버 후 replay 할 것인지, 끝낼 것인지 결정
-def isgameover(lives, score, MaxScore):
-
+def isgameover(lives, score):
+    global MaxScore
     if not lives:
         # 가장 큰 점수를 저장함
-        maxScore= score if MaxScore<score else MaxScore
+        MaxScore= score if MaxScore<score else MaxScore
         fh= open('data/maxScore.dat', 'wb')
-        pickle.dump(maxScore, fh)
+        pickle.dump(MaxScore, fh)
         fh.close()
 
         #showing = 현재시간, waiting = 현재시간 +10초
@@ -104,7 +103,7 @@ def isgameover(lives, score, MaxScore):
             if showing + 1000 < pygame.time.get_ticks():
                 showing += 1000
                 t -= 1
-            replay(t,maxScore)
+            replay(t,score)
             events = pygame.event.get()
 
             for event in events:
@@ -134,7 +133,7 @@ if __name__ == "__main__":
 
     while True:
         # game over
-        isgameover(lives, score, MaxScore)
+        isgameover(lives, score)
 
         #배경 이미지 (우주) screen에 붙여넣기
         screen.blit(background.image, background.location)
