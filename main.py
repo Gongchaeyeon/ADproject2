@@ -47,7 +47,7 @@ class main(QWidget):
         content_vbox.setContentsMargins(3,3,3,3)
 
         # 타이틀바와 컨텐츠 박스 안의 내용물을 생성
-        title_label = QtWidgets.QLabel("타자 디펜스 게임")
+        title_label = QtWidgets.QLabel("영단어 디펜스 게임")
         title_label.setFont(QFont('Arial', 14))
         lb1 = QLabel("ID: ")
         self.tf1 = QLineEdit()  # 아이디 레이아웃
@@ -117,9 +117,6 @@ class main(QWidget):
     def keyPressEvent(self,e):
         if e.key() == Qt.Key_Escape:
             exit()
-
-    def IdEnter(self):
-        self.startGame()
 
     def radioClicked(self):
         self.radio_value=self.sender().text()
