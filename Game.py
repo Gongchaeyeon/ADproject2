@@ -123,7 +123,6 @@ MaxScore=0
 
 if __name__ == "__main__":
     pygame.init()
-    pygame.mixer.init()
 
     # 배경음악 재생
     backgroundSound = pygame.mixer.Sound('data/sounds/background.wav')
