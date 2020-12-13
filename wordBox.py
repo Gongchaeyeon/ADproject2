@@ -8,7 +8,7 @@ class wordBox(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.word = production.makeWord()
-        self.w=15*len(self.word) # 단어박스의 가로길이 - 개선필요
+        self.w=15*len(self.word) # 단어박스의 가로길이 -
         self.h=30
 
         self.set = production.makeSet(X - self.w, Y - self.h) # 생성 좌표 설정
@@ -27,7 +27,7 @@ class wordBox(pygame.sprite.Sprite):
             self.rect = self.rect.move((g*self.speed[0], g*self.speed[1]))
 
     def set_speed(self, level, t):
-        #임시로 level*(producedT에 대한 무리함수꼴)
+        #level*(producedT에 대한 무리함수꼴)
         tmp=level*(t+0.9)**0.1
         self.scalar_speed = tmp if tmp<4 else 4
         self.set_float = [self.set[0] + self.w / 2, self.set[1] + self.h / 2]
@@ -37,7 +37,7 @@ class wordBox(pygame.sprite.Sprite):
         self.unit_speed = (self.initial_k * self.initial_xS, self.initial_k * self.initial_yS)  # cos, sin
         self.speed = (round(self.scalar_speed * self.unit_speed[0]),round(self.scalar_speed * self.unit_speed[1]))  # 벡터 식
 
-        #속력은 2*10^0.4 -> 약 5를 마지노선으로 잡고 가자
+        #속력은 2*10^0.4 -> 5를 최대속도로 하여 단어가 안보이는 현상 막음
 
 if __name__ == "__main__":
     pygame.font.init()
