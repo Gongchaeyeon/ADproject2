@@ -2,30 +2,24 @@ import wordBox as WB
 import inputBox as IB
 from Images import *    #Background, Earth, Meteor class
 import pygame, math, sys
-
 import pickle
 import tkinter as tk
 from tkinter import *
 from tkinter import messagebox
 Tk().wm_withdraw()
 
-#Sprite Group, enemy를 move 시키기 위해서 필요
-group = pygame.sprite.Group()
+group = pygame.sprite.Group() #Sprite Group, enemy를 move 시키기 위해서 필요
 
-#size of window
-display_size = (1280, 960)
+display_size = (1280, 960) #size of window
 size=display_size
 
-#bakcground
-background = Background("data/image/space.png")
+#사진 경로 지정
+background = Background("data/image/space.png") #bakcground
+earth = Earth("data/image/earth.png", 250) #Earth
+meteor = Meteor("data/image/meteor.png", 50) #Meteor
 
-#Earth
-earth = Earth("data/image/earth.png", 250)
-#Meteor
-meteor = Meteor("data/image/meteor.png", 50)
 
-#화면, 입력박스, 단어박스들, 라이프, 점수등 초기화
-def initialize():
+def initialize():  #화면, 입력박스, 단어박스들, 라이프, 점수등 초기화
     global screen, textinput, time_term, clock, last_time, enemy, lives, score, producedT, enemy_death, maxScore
     maxScore =0
 
@@ -38,7 +32,6 @@ def initialize():
     producedT=0+0.1
 
     #단어 생성 시간 간격 ms
-    #1500<time_term<=3000
     time_term = 1500 * (1 / (1 * producedT + 0.9)) + 1500
 
     #pygame의 clock 객체, 프레임 조정을 담당함
@@ -50,7 +43,7 @@ def initialize():
         group.remove(w)
 
     #livses and score
-    lives = 20
+    lives = 5
     score=0
 
     enemy_death = 0 #move함수 실험용 변수: 충돌한 행성 갯수
@@ -90,31 +83,34 @@ def replay(time,maxScore):
 
 #게임 오버 후 replay 할 것인지, 끝낼 것인지 결정
 def isgameover(lives, score, MaxScore):
+
     if not lives:
         # 가장 큰 점수를 저장함
         maxScore= score if MaxScore<score else MaxScore
         fh= open('data/maxScore.dat', 'wb')
         pickle.dump(maxScore, fh)
         fh.close()
+
         #showing = 현재시간, waiting = 현재시간 +10초
         waiting = pygame.time.get_ticks() + 10000
         showing = pygame.time.get_ticks()
         t = 10
         R_pressed = False
+
         #10초안에 R키 누를 시 재시작, 그렇지 않으면 게임 종료
         while (waiting > pygame.time.get_ticks() and not (R_pressed)):
+
             #1초가 경과할때마다 t가 1씩 줄어들어서 10-9-8...1-0 의 식으로 초를 보여줌
             if showing + 1000 < pygame.time.get_ticks():
                 showing += 1000
                 t -= 1
             replay(t,maxScore)
             events = pygame.event.get()
+
             for event in events:
-                #종료버튼을 누르면
-                if event.type == pygame.QUIT:
+                if event.type == pygame.QUIT: #종료버튼을 누르면
                     exit()
-                #R key가 눌리면
-                elif event.type == pygame.KEYDOWN and event.key == pygame.locals.K_r:
+                elif event.type == pygame.KEYDOWN and event.key == pygame.locals.K_r: #R key가 눌리면
                     initialize()
                     R_pressed = True
                     break
@@ -163,18 +159,17 @@ if __name__ == "__main__":
             group.add(enemy)
 
             producedT+=0.1
-            print(time_term)    #시간 간격 확인용 출력문
 
             time_term = 1500 * (1 / (1* producedT + 0.9)) + 1500
             last_time+=time_term
 
-            print("생성된 애들: {}".format(int(producedT * 10))) #확인용 코드
-
         for enemy in group:
-            #운석 이미지 생성위치 -> 뺄 숫자 바꿔주면서 글자랑 위치 조정했음
+            #운석 이미지 생성위치 -> 뺄 숫자 바꿔주면서 글자랑 위치 조정
             meteor_location=[enemy.rect.x-15, enemy.rect.y-30]
-            # 단어박스 움직임 size = (1280, 960)
+
+            # 단어박스 움직임
             enemy.move((size[0]/2-30, size[1]/2), (meteor_location[0]+meteor.r, meteor_location[1]+meteor.r))
+
             #운석, 단어 screen에 붙여넣기
             screen.blit(meteor.image, meteor_location)
             screen.blit(enemy.surface, (enemy.rect.x+5, enemy.rect.y+5))
@@ -183,15 +178,13 @@ if __name__ == "__main__":
             #확인 코드 : 운석 주변 원 표시 -> 중력 효과 적용 보기 위해서
             pygame.draw.circle(screen, (255, 255, 0), (meteor_location[0]+50, meteor_location[1]+50), meteor.r, 2)
 
-            #meteor 이동
             meteor_location[0]+=enemy.speed[0]
             meteor_location[1]+=enemy.speed[1]
 
             #운석이 지구와 부딪히면
             if meteor.collision((size[0]/2-30, size[1]/2), earth.r - 70, (meteor_location[0]-30, meteor_location[1])):
-                #group에서 enemy(단어) 제거 -> 화면에서 사라지는 효과
-                group.remove(enemy)
-                
+                group.remove(enemy) #group에서 enemy(단어) 제거 -> 화면에서 사라지는 효과
+
                 # 부딪히는 효과음
                 hit = pygame.mixer.Sound('data/sounds/쿠르를.wav')
                 hit.set_volume(1)
@@ -199,7 +192,6 @@ if __name__ == "__main__":
                 lives-=1
                 
                 enemy_death+=1
-                print("죽은 애들: {}".format(enemy_death))  #move함수 확인용 코드 -> 360개중 360개 정확히 충돌함
 
         events = pygame.event.get() #사용자로부터 이벤트 받음
         for event in events:
@@ -213,8 +205,6 @@ if __name__ == "__main__":
         # 매 프레임마다 이벤트를 준다,Feed it with events every frame -> 입력 박스에 글자가 써지고 지워지는 것, 엔터누르면 입력되는 것..
 
         #단어 입력시(엔터) group내에 같은 글자를 가진게 있으면, 해당 단어박스 없앰. kill enemy by entering correspending word
-        #Game.py에서 inputBox 클래스를 이미 import 했음, 단어제거 메소드를 inputBox.py에 구현하려면 Game.py를 import해야하는데 이는 에러를 야기함
-        # -> 그래서 엔터가 눌리면 search를 true로 반환 시키고, 이때마다 Game.py에서 단어박스 제거의 기능을 시행하도록 함
         if textinput.get_search():
             for w in group:
                 if textinput.get_text() == w.word:
@@ -236,16 +226,3 @@ if __name__ == "__main__":
         #screen을 업데이트 시켜서 화면에 보이도록 함
         pygame.display.update()
         clock.tick(30)
-
-#개선해야 할점
-# 3. 가운데 정렬
-# 5. enemy(wordBox's instance) width 크기 조정
-
-#해결
-
-# 2. collision 처리  Game.py line 11
-# 6. 단어 move 의 rect.move 오버라이드 해서 실수형 가능하게 하기 .
-# -> 실수로 좌표를 주면 운석이 끼게됨, move함수는 그대로하고 지구 크기를 늘려서 간접적으로 해결함
-
-# 1. enemy(wordBox's instance) remove 하는 방법  Game.py line 87, inputBox.py line 115
-# 4. 엔터하면 단어 사라지게 만들기

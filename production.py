@@ -30,11 +30,9 @@ def makeSet(X, Y):
     if random.randint(0,1): #위 또는 아래에서 나올때
         x= random.choice((0, X))    #모서리 중 하나
         y= random.randrange(0, Y, 5)
-
     else:
         x= random.randrange(0, X, 5)
         y= random.choice((0, Y))
-
     return (x, y)
 
 if __name__ == '__main__':
@@ -46,7 +44,5 @@ if __name__ == '__main__':
     for w in worddb:
         if maxV<len(w):
             maxV=len(w)
-    print(maxV)
 
     f.close()
-

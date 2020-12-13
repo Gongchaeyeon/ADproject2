@@ -4,18 +4,13 @@ Copyright 2017, Silas Gyger, silasgyger@gmail.com, All rights reserved.
 Borrowed from https://github.com/Nearoo/pygame-text-input under the MIT license.
 modified by SunwooKim11
 """
-
 import os.path
-
 import pygame
 import pygame.locals as pl
-#from Game import *
-
 pygame.font.init()
 
 #display size
 display_size=(1280,960)
-
 
 class TextInput:
     """
@@ -72,7 +67,6 @@ class TextInput:
         rect_x=(display_size[0]-rect_w)//2
         rect_y=(display_size[1]-rect_h)//2
         self.rect = pygame.Rect(rect_x,rect_y,rect_w,rect_h)
-
 
         # Vars to make keydowns repeat after user pressed a key for some time:
         self.keyrepeat_counters = {}  # {event.key: (counter_int, event.unicode)} (look for "***")
@@ -218,7 +212,6 @@ if __name__ == "__main__":
 
     while True:
         screen.fill((225, 225, 225))
-
 
         events = pygame.event.get()
         for event in events:

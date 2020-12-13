@@ -12,7 +12,6 @@ class Image(pygame.sprite.Sprite):
         #이미지의 크기를 원하는 size에 맞게 조정함
         self.image = pygame.transform.scale(self.image_file, self.size)
 
-
 class Background(Image):
     def __init__(self, image_file):
         super().__init__(image_file)
